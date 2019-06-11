@@ -30,23 +30,26 @@ function generateClassName(dirName) {
 }
 
 function generateComponent(componentName, fullPath, componentType) {
-    if (fs.existsSync(fullPath)) {
-        console.log(`${componentName} already exists, please choose another name.`);
-        return;
-    }
+    // if (fs.existsSync(fullPath)) {
+    //     console.log(`${componentName} already exists, please choose another name.`);
+    //     return;
+    // }
 
     const className = generateClassName(componentName);
     console.log(`class name: ${className}`);
 
-
-    fs.mkdirSync(fullPath);
+    // fs.mkdirSync(fullPath);
 
     const fcTemplate = path.resolve(__dirname, './file_template/fc.txt');
     const pcTemplate = path.resolve(__dirname, './file_template/pc.txt');
     const sassTemplate = path.resolve(__dirname, './file_template/scss.scss');
 
-    const jsFile = path.resolve(`${fullPath}/index.js`);
-    const sassFile = path.resolve(`${fullPath}/index.scss`);
+    const jsFile = path.resolve(`${fullPath}/${className}.js`);
+
+    if (!fs.existsSync(`${fullPath}/style/`)) {
+        fs.mkdirSync(`${fullPath}/style/`);
+    }
+    const sassFile = path.resolve(`${fullPath}/style/${className}.scss`);
 
     fs.writeFileSync(sassFile, fs.readFileSync(sassTemplate, { encoding: 'utf-8' }));
 
@@ -59,7 +62,7 @@ function generateComponent(componentName, fullPath, componentType) {
     }
 
     fs.writeFileSync(jsFile, jsFileContent.replace(/ClassName/g, className));
-
+    
     exec(`cd ${fullPath} && git add .`, (err) => {
         if (err) {
             console.log('command fail:', 'git add .');
@@ -98,7 +101,8 @@ function activate(context) {
             if (!value) return;
 
             const componentName = value;
-            const fullPath = `${folderPath}/${componentName}`;
+            //const fullPath = `${folderPath}/${componentName}`;
+            const fullPath = `${folderPath}`;
 
             generateComponent(componentName, fullPath, ComponentType.FUNCTIONAL_COMP);
         });
@@ -120,7 +124,7 @@ function activate(context) {
             if (!value) return;
 
             const componentName = value;
-            const fullPath = `${folderPath}/${componentName}`;
+            const fullPath = `${folderPath}`;
 
             generateComponent(componentName, fullPath, ComponentType.PURE_COMP);
         });
